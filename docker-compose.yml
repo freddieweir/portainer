@@ -1,0 +1,31 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:2.20.3
+    container_name: portainer
+    restart: always
+    ports:
+      - "8000:8000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./portainer_data:/data
+    networks:
+      - portainer_net
+
+  portainer_agent:
+    image: portainer/agent:2.20.3
+    container_name: portainer_agent
+    restart: always
+    ports:
+      - "9001:9001"
+    environment:
+      AGENT_CLUSTER_ADDR: portainer_agent:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./agent_volumes:/var/lib/docker/volumes
+    networks:
+      - portainer_net
+
+networks:
+  portainer_net:
+    driver: bridge
